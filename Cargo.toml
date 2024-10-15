@@ -1,5 +1,5 @@
 [workspace]
-members = ["ids_std_domain", "ids_std_utils"]
+members = ["ids_std_domain", "ids_std_rest_api", "ids_std_utils"]
 resolver = "2"
 exclude = []
 
