@@ -4,11 +4,11 @@ use serde::Serialize;
 pub struct Replier;
 
 impl Replier {
-    pub fn ok<T>(content: T) -> axum::response::Response
+    pub fn ok<T>(content: T) -> axum::Json<T>
     where
         T: Serialize,
     {
-        Self::render(StatusCode::OK, content)
+        axum::Json(content)
     }
 
     pub fn render<T>(code: StatusCode, content: T) -> axum::response::Response
