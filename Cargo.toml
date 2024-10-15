@@ -1,0 +1,6 @@
+[workspace]
+members = ["ids_std_domain"]
+resolver = "2"
+exclude = []
+
+[workspace.dependencies]
