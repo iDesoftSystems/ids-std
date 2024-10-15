@@ -1,0 +1,8 @@
+[package]
+name = "ids_std_sea"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sea-orm = "1.0"
+ids_std_domain = { path = "../ids_std_domain" }
