@@ -12,9 +12,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use validator::Validate;
+    use validation::Validate;
 
-    use crate::validator;
+    use crate::validation;
 
     #[derive(Validate, Debug)]
     struct ValidateMe {
@@ -27,7 +27,7 @@ mod tests {
         let to_validate = ValidateMe {
             name: "Hello".to_string(),
         };
-        let result = validator::try_validate(&to_validate);
+        let result = validation::try_validate(&to_validate);
         assert!(result.is_ok())
     }
 
@@ -36,7 +36,7 @@ mod tests {
         let to_validate = ValidateMe {
             name: "".to_string(),
         };
-        let result = validator::try_validate(&to_validate);
+        let result = validation::try_validate(&to_validate);
 
         assert!(result.is_err())
     }
