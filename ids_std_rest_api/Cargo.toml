@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-validator = { version = "0.16", features = ["derive"] }
+validator = { workspace = true }
 axum = "0.7"
 serde = { version = "1.0", features = ["derive"] }
 ids_std_domain = { path = "../ids_std_domain" }
