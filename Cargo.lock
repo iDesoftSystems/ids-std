@@ -920,6 +920,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ids_std_rest_testing"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "http-body-util",
+ "mime",
+ "serde_json",
+]
+
+[[package]]
 name = "ids_std_sea"
 version = "0.1.0"
 dependencies = [
