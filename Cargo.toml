@@ -1,7 +1,15 @@
 [workspace]
-members = ["ids_std_domain", "ids_std_rest_api", "ids_std_sea", "ids_std_utils"]
+members = [
+    "ids_std_domain",
+    "ids_std_rest_api",
+    "ids_std_rest_testing",
+    "ids_std_sea",
+    "ids_std_utils",
+]
 resolver = "2"
 exclude = []
 
 [workspace.dependencies]
 validator = { version = "0.18", features = ["derive"] }
+axum = "0.7"
+mime = "0.3"
