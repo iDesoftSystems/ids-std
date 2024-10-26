@@ -4,7 +4,7 @@ use ids_std_domain::{
 };
 use sea_orm::{ConnectionTrait, Paginator, SelectorTrait};
 
-use crate::replier::Replier;
+use crate::convert::into::IntoDomain;
 
 pub async fn fetch_page<C, S, O, F>(
     paginator: &Paginator<'_, C, S>,
@@ -19,12 +19,12 @@ where
     let page_info = paginator
         .num_items_and_pages()
         .await
-        .map_err(Replier::selector)?;
+        .map_err(|err| err.into_domain())?;
 
     let model_items: Vec<O> = paginator
         .fetch_page(query.page)
         .await
-        .map_err(Replier::selector)?
+        .map_err(|err| err.into_domain())?
         .iter()
         .map(mapper)
         .collect();
