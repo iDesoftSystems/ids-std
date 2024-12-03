@@ -1,12 +1,12 @@
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
-pub struct Created {
-    pub id: i32,
+pub struct Created<I> {
+    pub id: I,
 }
 
-impl Created {
-    pub fn new(id: i32) -> Self {
+impl<I> Created<I> {
+    pub fn new(id: I) -> Self {
         Self { id }
     }
 }
