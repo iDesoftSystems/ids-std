@@ -1,6 +1,6 @@
 use axum::http::StatusCode;
 use ids_std_domain::api::failure::{
-    CreateDomainFailure, FindManyFailure, FindOneFailure, UpdateDomainFailure,
+    CreateDomainFailure, FindManyFailure, FindOneFailure, InvalidField, UpdateDomainFailure,
 };
 
 use crate::{replier::Replier, types::failure::FailureReply};
@@ -10,26 +10,19 @@ pub enum ApiFailure {
     BadRequest(String),
     InternalServerError(String),
     NotFound(String),
-    InvalidData(String),
     Unknown(String),
     Conflict(String),
-    ValidationError(validator::ValidationErrors),
+    InvalidFields(Vec<InvalidField>),
 }
 
 impl axum::response::IntoResponse for ApiFailure {
     fn into_response(self) -> axum::response::Response {
         match self {
-            ApiFailure::BadRequest(msg) => {
-                Replier::render(StatusCode::BAD_REQUEST, FailureReply::from(msg))
-            }
             ApiFailure::InternalServerError(msg) => {
                 Replier::render(StatusCode::INTERNAL_SERVER_ERROR, FailureReply::from(msg))
             }
             ApiFailure::NotFound(msg) => {
                 Replier::render(StatusCode::NOT_FOUND, FailureReply::from(msg))
-            }
-            ApiFailure::InvalidData(msg) => {
-                Replier::render(StatusCode::UNPROCESSABLE_ENTITY, FailureReply::from(msg))
             }
             ApiFailure::Unknown(msg) => {
                 Replier::render(StatusCode::INTERNAL_SERVER_ERROR, FailureReply::from(msg))
@@ -37,8 +30,11 @@ impl axum::response::IntoResponse for ApiFailure {
             ApiFailure::Conflict(msg) => {
                 Replier::render(StatusCode::CONFLICT, FailureReply::from(msg))
             }
-            ApiFailure::ValidationError(errs) => {
-                Replier::render(StatusCode::UNPROCESSABLE_ENTITY, FailureReply::from(errs))
+            ApiFailure::InvalidFields(fields) => {
+                Replier::render(StatusCode::BAD_REQUEST, FailureReply::from(fields))
+            }
+            ApiFailure::BadRequest(msg) => {
+                Replier::render(StatusCode::BAD_REQUEST, FailureReply::from(msg))
             }
         }
     }
@@ -49,8 +45,8 @@ impl From<CreateDomainFailure> for ApiFailure {
         match err {
             CreateDomainFailure::Unknown(msg) => ApiFailure::Unknown(msg),
             CreateDomainFailure::Conflict(msg) => ApiFailure::Conflict(msg),
-            CreateDomainFailure::ValidationError(errs) => ApiFailure::ValidationError(errs),
-            CreateDomainFailure::InvalidData(msg) => ApiFailure::InvalidData(msg),
+            CreateDomainFailure::InvalidFields(fields) => ApiFailure::InvalidFields(fields),
+            CreateDomainFailure::InvalidField(field) => ApiFailure::InvalidFields(vec![field]),
         }
     }
 }
@@ -58,8 +54,8 @@ impl From<CreateDomainFailure> for ApiFailure {
 impl From<UpdateDomainFailure> for ApiFailure {
     fn from(err: UpdateDomainFailure) -> Self {
         match err {
-            UpdateDomainFailure::ValidationError(msg) => ApiFailure::ValidationError(msg),
-            UpdateDomainFailure::InvalidData(msg) => ApiFailure::InvalidData(msg),
+            UpdateDomainFailure::InvalidFields(fields) => ApiFailure::InvalidFields(fields),
+            UpdateDomainFailure::InvalidField(field) => ApiFailure::InvalidFields(vec![field]),
             UpdateDomainFailure::Unknown(msg) => ApiFailure::Unknown(msg),
             UpdateDomainFailure::Conflict(msg) => ApiFailure::Conflict(msg),
         }

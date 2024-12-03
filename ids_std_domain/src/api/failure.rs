@@ -1,17 +1,27 @@
-use validator::ValidationErrors;
+#[derive(Debug, PartialEq)]
+pub struct InvalidField {
+    pub field: String,
+    pub error: String,
+}
+
+impl InvalidField {
+    pub fn new(field: String, err: String) -> Self {
+        Self { field, error: err }
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub enum CreateDomainFailure {
-    ValidationError(ValidationErrors),
-    InvalidData(String),
     Unknown(String),
     Conflict(String),
+    InvalidFields(Vec<InvalidField>),
+    InvalidField(InvalidField),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum UpdateDomainFailure {
-    ValidationError(ValidationErrors),
-    InvalidData(String),
+    InvalidFields(Vec<InvalidField>),
+    InvalidField(InvalidField),
     Unknown(String),
     Conflict(String),
 }
@@ -29,7 +39,6 @@ pub enum FindManyFailure {
 
 #[derive(Debug, PartialEq)]
 pub enum DeleteOneFailure {
-    InvalidData(String),
     Unknown(String),
     NotFound(String),
 }

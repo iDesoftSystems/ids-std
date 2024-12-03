@@ -1,9 +1,10 @@
+use ids_std_domain::api::failure::InvalidField;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct FailureReply {
     pub message: String,
-    pub errors: Vec<ValidationFailure>,
+    pub errors: Vec<InvalidFieldFailure>,
 }
 
 impl From<String> for FailureReply {
@@ -15,36 +16,25 @@ impl From<String> for FailureReply {
     }
 }
 
-impl From<Vec<ValidationFailure>> for FailureReply {
-    fn from(value: Vec<ValidationFailure>) -> Self {
+impl From<Vec<InvalidField>> for FailureReply {
+    fn from(value: Vec<InvalidField>) -> Self {
         Self {
             message: String::from("validation error"),
-            errors: value,
+            errors: value
+                .into_iter()
+                .map(|failure| InvalidFieldFailure::new(failure.field, failure.error))
+                .collect(),
         }
     }
 }
 
-impl From<validator::ValidationErrors> for FailureReply {
-    fn from(value: validator::ValidationErrors) -> Self {
-        let mut val_errors: Vec<ValidationFailure> = value
-            .field_errors()
-            .into_iter()
-            .map(|error| ValidationFailure::new(error.0.to_string(), error.1[0].code.to_string()))
-            .collect();
-
-        val_errors.sort_by(|a, b| a.field.to_lowercase().cmp(&b.field.to_lowercase()));
-
-        Self::from(val_errors)
-    }
-}
-
 #[derive(Debug, Serialize)]
-pub struct ValidationFailure {
+pub struct InvalidFieldFailure {
     pub field: String,
     pub error: String,
 }
 
-impl ValidationFailure {
+impl InvalidFieldFailure {
     pub fn new(field: String, err: String) -> Self {
         Self { field, error: err }
     }
