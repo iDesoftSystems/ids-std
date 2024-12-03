@@ -1,12 +1,30 @@
-use validator::{Validate, ValidationErrors};
+use validator::Validate;
 
-pub fn try_validate<T>(params: &T) -> Result<(), ValidationErrors>
-where
-    T: Validate,
-{
-    match params.validate() {
-        Ok(()) => Ok(()),
-        Err(err) => Err(err),
+use crate::api::failure::InvalidField;
+
+pub struct Validator;
+
+impl Validator {
+    pub fn try_validate<T>(params: &T) -> Result<(), Vec<InvalidField>>
+    where
+        T: Validate,
+    {
+        match params.validate() {
+            Ok(()) => Ok(()),
+            Err(err) => Err(Self::to_domain(err)),
+        }
+    }
+
+    fn to_domain(errs: validator::ValidationErrors) -> Vec<InvalidField> {
+        let mut val_errors: Vec<InvalidField> = errs
+            .field_errors()
+            .into_iter()
+            .map(|error| InvalidField::new(error.0.to_string(), error.1[0].code.to_string()))
+            .collect();
+
+        val_errors.sort_by(|a, b| a.field.to_lowercase().cmp(&b.field.to_lowercase()));
+
+        val_errors
     }
 }
 
@@ -27,7 +45,7 @@ mod tests {
         let to_validate = ValidateMe {
             name: "Hello".to_string(),
         };
-        let result = validation::try_validate(&to_validate);
+        let result = validation::Validator::try_validate(&to_validate);
         assert!(result.is_ok())
     }
 
@@ -36,7 +54,7 @@ mod tests {
         let to_validate = ValidateMe {
             name: "".to_string(),
         };
-        let result = validation::try_validate(&to_validate);
+        let result = validation::Validator::try_validate(&to_validate);
 
         assert!(result.is_err())
     }

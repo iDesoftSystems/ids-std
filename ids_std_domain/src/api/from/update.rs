@@ -1,4 +1,5 @@
 use crate::api;
+use crate::api::failure::InvalidField;
 use crate::spi;
 
 impl From<spi::failure::SaveRepoFailure> for api::failure::UpdateDomainFailure {
@@ -9,9 +10,9 @@ impl From<spi::failure::SaveRepoFailure> for api::failure::UpdateDomainFailure {
     }
 }
 
-impl From<validator::ValidationErrors> for api::failure::UpdateDomainFailure {
-    fn from(errs: validator::ValidationErrors) -> Self {
-        api::failure::UpdateDomainFailure::ValidationError(errs)
+impl From<Vec<InvalidField>> for api::failure::UpdateDomainFailure {
+    fn from(value: Vec<InvalidField>) -> Self {
+        Self::InvalidFields(value)
     }
 }
 
