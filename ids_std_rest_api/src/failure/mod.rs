@@ -1,6 +1,9 @@
+pub mod spi_ext;
+pub mod api_ext;
+
 use axum::http::StatusCode;
 use ids_std_domain::api::failure::{
-    CreateDomainFailure, FindManyFailure, FindOneFailure, InvalidField, UpdateDomainFailure,
+    InvalidField,
 };
 
 use crate::{replier::Replier, types::failure::FailureReply};
@@ -36,45 +39,6 @@ impl axum::response::IntoResponse for ApiFailure {
             ApiFailure::Forbidden(msg) => {
                 Replier::render(StatusCode::FORBIDDEN, FailureReply::from(msg))
             }
-        }
-    }
-}
-
-impl From<CreateDomainFailure> for ApiFailure {
-    fn from(err: CreateDomainFailure) -> Self {
-        match err {
-            CreateDomainFailure::Unknown(msg) => ApiFailure::Unknown(msg),
-            CreateDomainFailure::Conflict(msg) => ApiFailure::Conflict(msg),
-            CreateDomainFailure::InvalidFields(fields) => ApiFailure::InvalidFields(fields),
-            CreateDomainFailure::InvalidField(field) => ApiFailure::InvalidFields(vec![field]),
-        }
-    }
-}
-
-impl From<UpdateDomainFailure> for ApiFailure {
-    fn from(err: UpdateDomainFailure) -> Self {
-        match err {
-            UpdateDomainFailure::InvalidFields(fields) => ApiFailure::InvalidFields(fields),
-            UpdateDomainFailure::InvalidField(field) => ApiFailure::InvalidFields(vec![field]),
-            UpdateDomainFailure::Unknown(msg) => ApiFailure::Unknown(msg),
-            UpdateDomainFailure::Conflict(msg) => ApiFailure::Conflict(msg),
-        }
-    }
-}
-
-impl From<FindOneFailure> for ApiFailure {
-    fn from(err: FindOneFailure) -> Self {
-        match err {
-            FindOneFailure::Unknown(msg) => ApiFailure::Unknown(msg),
-            FindOneFailure::NotFound(msg) => ApiFailure::NotFound(msg),
-        }
-    }
-}
-
-impl From<FindManyFailure> for ApiFailure {
-    fn from(err: FindManyFailure) -> Self {
-        match err {
-            FindManyFailure::Unknown(msg) => ApiFailure::Unknown(msg),
         }
     }
 }
