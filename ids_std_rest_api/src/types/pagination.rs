@@ -49,3 +49,17 @@ impl<I> Into<Page<I>> for Paged<I> {
         }
     }
 }
+
+impl<I> From<&Page<I>> for Paged<I>
+where
+    I: Clone,
+{
+    fn from(value: &Page<I>) -> Self {
+        Self {
+            data: value.data.to_vec(),
+            total: value.total,
+            page: value.page,
+            page_size: value.page_size,
+        }
+    }
+}
