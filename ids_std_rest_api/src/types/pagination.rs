@@ -50,16 +50,16 @@ impl<I> Into<Page<I>> for Paged<I> {
     }
 }
 
-impl<I> From<&Page<I>> for Paged<I>
+impl<I> Into<Paged<I>> for Page<I>
 where
     I: Clone,
 {
-    fn from(value: &Page<I>) -> Self {
-        Self {
-            data: value.data.to_vec(),
-            total: value.total,
-            page: value.page,
-            page_size: value.page_size,
+    fn into(self) -> Paged<I> {
+        Paged {
+            data: self.data.to_vec(),
+            total: self.total,
+            page: self.page,
+            page_size: self.page_size,
         }
     }
 }
